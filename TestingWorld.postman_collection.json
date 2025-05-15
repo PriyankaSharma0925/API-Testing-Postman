@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "8b931319-62e4-4988-a4d7-31847e426caf",
+		"_postman_id": "62bf8266-2059-4749-b26d-e84059925e4d",
 		"name": "TestingWorld",
+		"description": "To follow the DRY (Don't Repeat Yourself) principle, we'll start by storing reusable functions as variables at the collection or global level. After that, we'll explore more advanced techniques for achieving code reusability.\n\nAlso, using Postman's dynamic variables to create fake data.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "4553027",
-		"_collection_link": "https://galactic-zodiac-957363.postman.co/workspace/LearnAPITesting~9a33d4b8-8b55-4c76-b953-1cbbfddec886/collection/4553027-8b931319-62e4-4988-a4d7-31847e426caf?action=share&source=collection_link&creator=4553027"
+		"_collection_link": "https://galactic-zodiac-957363.postman.co/workspace/API_ReuseFunctions~2d4e45aa-01fb-4eab-9b29-8d6b40118d0f/collection/4553027-62bf8266-2059-4749-b26d-e84059925e4d?action=share&source=collection_link&creator=4553027"
 	},
 	"item": [
 		{
@@ -14,21 +15,36 @@
 					"name": "Create_StudentDetails",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Working after creating a fork.\r",
+									"console.log(\"I am at request level. I execute after collection and folder level\")\r",
+									"\r",
+									"// Net to follow DRY\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Verify Post status code\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
+									"var data=pm.response.json();\r",
+									"console.log(data.id)\r",
+									"var StudentId=data.id;\r",
+									"pm.environment.set(\"Student_ID\", StudentId);\r",
+									"\r",
+									"// \r",
+									"pm.test(\"Verify string created is in status code\", function () {\r",
+									"    pm.expect(pm.response.status).to.include(\"Created\");\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Response time is less than 500ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Status code name has string created\", function () {\r",
-									"    var var_created = pm.environment.get(\"var_response\");\r",
-									"\r",
-									"    pm.response.to.have.status(var_created);\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"In Response header Server is present\", function () {\r",
@@ -43,32 +59,25 @@
 									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Validate response last  name\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.last_name).to.eql(\"Sharma\");\r",
+									"// Verify the name in response body is same as the name in request body.\r",
+									"\r",
+									"pm.test(\"Verify response body name is same as request body name\", function () {\r",
+									"    req_data=JSON.parse(pm.request.body.raw);\r",
+									"    console.log(req_data.first_name)\r",
+									"    console.log(req_data.last_name)\r",
+									"    pm.expect(data.first_name).to.eql(req_data.first_name);\r",
+									"    pm.expect(data.last_name).to.eql(req_data.last_name);\r",
+									"   \r",
 									"});\r",
-									"pm.environment.unset(\"example\");\r",
-									"\r",
-									"pm.environment.set(\"example\", \"environ_Variable\");\r",
-									"\r",
-									"var data=pm.response.json();\r",
-									"console.log(data.id)\r",
-									"var StudentId=data.id;\r",
-									"pm.environment.set(\"Student_ID\", StudentId);\r",
 									"\r",
 									"\r",
 									"\r",
 									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
 									""
 								],
 								"type": "text/javascript",
@@ -84,7 +93,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\":\"1\",\r\n    \"first_name\": \"Priyanka\",\r\n    \"middle_name\": \"\",\r\n    \"last_name\": \"Sharma\",\r\n    \"date_of_birth\": \"14-Jul-1986\"\r\n}",
+							"raw": "{\r\n    \"id\":\"1\",\r\n    \"first_name\": \"{{$randomFirstName}}\",\r\n    \"middle_name\": \"\",\r\n    \"last_name\": \"{{$randomLastName}}\" ,\r\n    \"date_of_birth\": \"1986\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -151,61 +160,35 @@
 					"response": []
 				},
 				{
-					"name": "Update_StudentDetails",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Verify Update success code\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Verify Staus response value\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"update  data success\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Status code name has string\", function () {\r",
-									"    pm.response.to.have.status(\"OK\");\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
+					"name": "New Request",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\":\"10517838\",\r\n    \"first_name\": \"Priyanka\",\r\n    \"middle_name\": \"\",\r\n    \"last_name\": \"Sharma\",\r\n    \"date_of_birth\": \"14-Jun-1986\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/studentsDetails/{{Student_ID}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"studentsDetails",
-								"{{Student_ID}}"
-							]
-						}
+						"method": "GET",
+						"header": []
 					},
 					"response": []
+				}
+			],
+			"description": "To add student details.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"console.log(\"I am at folder level. I execute after collection pre-request.\")"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -219,32 +202,17 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var template = `\r",
-									"<style type=\"text/css\">\r",
-									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
-									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
-									"    .tftable tr {background-color:#ffffff;}\r",
-									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
-									"    .tftable tr:hover {background-color:#e0ffff;}\r",
-									"</style>\r",
-									"\r",
-									"<table class=\"tftable\" border=\"1\">\r",
-									"    <tr>\r",
-									"        <th>Status</th>\r",
-									"        <th>Message</th>\r",
-									"    </tr>\r",
-									"    <tr>\r",
-									"        <td>{{response.status}}</td>\r",
-									"        <td>{{response.msg}}</td>\r",
-									"    </tr>\r",
-									"</table>\r",
-									"`;\r",
-									"\r",
-									"function constructVisualizerPayload() {\r",
-									"    return { response: pm.response.json() }\r",
-									"}\r",
-									"\r",
-									"pm.visualizer.set(template, constructVisualizerPayload());"
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.clear()"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -259,7 +227,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"Permanent_Address\": {\r\n    \"House_Number\": \"8088 Main Street\",\r\n    \"City\": \"Vancouver\",\r\n    \"State\": \"BC\",\r\n    \"Country\": \"Canada\",\r\n    \"PhoneNumber\": [\r\n      {\r\n        \"Std_Code\": 236,\r\n        \"Home\": 1234,\r\n        \"Mobile\": 345\r\n      },\r\n      {\r\n        \"Std_Code\": \"sample string 1\",\r\n        \"Home\": \"sample string 2\",\r\n        \"Mobile\": \"sample string 3\"\r\n      }\r\n    ]\r\n  },\r\n  \"Current_Address\": {\r\n    \"House_Number\": \"sample string 1\",\r\n    \"City\": \"sample string 2\",\r\n    \"State\": \"sample string 3\",\r\n    \"Country\": \"sample string 4\",\r\n    \"PhoneNumber\": [\r\n      {\r\n        \"Std_Code\": \"sample string 1\",\r\n        \"Home\": \"sample string 2\",\r\n        \"Mobile\": \"sample string 3\"\r\n      },\r\n      {\r\n        \"Std_Code\": 456,\r\n        \"Home\": 123,\r\n        \"Mobile\": 3330\r\n      }\r\n    ]\r\n  },\r\n  \"stId\": {{Student_ID}}\r\n}",
+							"raw": "{\r\n  \"Permanent_Address\": {\r\n    \"House_Number\": \"{{$randomStreetAddress}}\",\r\n    \"City\": \"{{$randomCity}}\",\r\n    \"State\": \"BC\",\r\n    \"Country\": \"{{$randomCountry}}\",\r\n    \"PhoneNumber\": [\r\n      {\r\n        \"Std_Code\": 236,\r\n        \"Home\": 1234,\r\n        \"Mobile\": 345\r\n      },\r\n      {\r\n        \"Std_Code\": \"sample string 1\",\r\n        \"Home\": \"sample string 2\",\r\n        \"Mobile\": \"{{$randomPhoneNumber}}\"\r\n      }\r\n    ]\r\n  },\r\n  \"Current_Address\": {\r\n    \"House_Number\": \"sample string 1\",\r\n    \"City\": \"sample string 2\",\r\n    \"State\": \"sample string 3\",\r\n    \"Country\": \"sample string 4\",\r\n    \"PhoneNumber\": [\r\n      {\r\n        \"Std_Code\": \"sample string 1\",\r\n        \"Home\": \"sample string 2\",\r\n        \"Mobile\": \"sample string 3\"\r\n      },\r\n      {\r\n        \"Std_Code\": 456,\r\n        \"Home\": 123,\r\n        \"Mobile\": 3330\r\n      }\r\n    ]\r\n  },\r\n  \"stId\": {{Student_ID}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -290,7 +258,91 @@
 									"   var_json= pm.response.json()\r",
 									"   console.log(var_json)\r",
 									"   pm.expect(var_json.data[\"Address\"][0][\"Permanent_Address\"][\"State\"]).to.eql(\"BC\")\r",
-									"})"
+									"})\r",
+									"\r",
+									"\r",
+									"var schema={\r",
+									"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+									"  \"title\": \"PersonRecord\",\r",
+									"  \"type\": \"object\",\r",
+									"  \"properties\": {\r",
+									"    \"status\": {\r",
+									"      \"type\": \"string\",\r",
+									"      \"description\": \"Operation status as a string\"\r",
+									"    },\r",
+									"    \"data\": {\r",
+									"      \"type\": \"object\",\r",
+									"      \"properties\": {\r",
+									"        \"first_name\":   { \"type\": \"string\" },\r",
+									"        \"middle_name\":  { \"type\": \"string\" },\r",
+									"        \"last_name\":    { \"type\": \"string\" },\r",
+									"        \"date_of_birth\":{ \"type\": \"string\", \"pattern\": \"^[0-9]{4}$\" },\r",
+									"        \"TechnicalDetails\": {\r",
+									"          \"type\": \"array\",\r",
+									"          \"items\": {}\r",
+									"        },\r",
+									"        \"Address\": {\r",
+									"          \"type\": \"array\",\r",
+									"          \"items\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"              \"Permanent_Address\": {\r",
+									"                \"type\": \"object\",\r",
+									"                \"properties\": {\r",
+									"                  \"House_Number\": { \"type\": \"string\" },\r",
+									"                  \"City\":         { \"type\": \"string\" },\r",
+									"                  \"State\":        { \"type\": \"string\" },\r",
+									"                  \"Country\":      { \"type\": \"string\" },\r",
+									"                  \"PhoneNumber\": {\r",
+									"                    \"type\": \"array\",\r",
+									"                    \"items\": {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Std_Code\": { \"type\": \"string\" },\r",
+									"                        \"Home\":     { \"type\": \"string\" },\r",
+									"                        \"Mobile\":   { \"type\": \"string\" }\r",
+									"                      },\r",
+									"                      \"required\": [\"Std_Code\", \"Home\", \"Mobile\"],\r",
+									"                      \"additionalProperties\": false\r",
+									"                    }\r",
+									"                  }\r",
+									"                },\r",
+									"                \"required\": [\"House_Number\", \"City\", \"State\", \"Country\", \"PhoneNumber\"],\r",
+									"                \"additionalProperties\": false\r",
+									"              },\r",
+									"              \"Current_Address\": {\r",
+									"                \"oneOf\": [\r",
+									"                  { \"type\": \"null\" },\r",
+									"                  { \"type\": \"object\" }\r",
+									"                ]\r",
+									"              },\r",
+									"              \"stId\": { \"type\": \"string\" }\r",
+									"            },\r",
+									"            \"required\": [\"Permanent_Address\", \"Current_Address\", \"stId\"],\r",
+									"            \"additionalProperties\": false\r",
+									"          }\r",
+									"        }\r",
+									"      },\r",
+									"      \"required\": [\r",
+									"        \"first_name\",\r",
+									"        \"middle_name\",\r",
+									"        \"last_name\",\r",
+									"        \"date_of_birth\",\r",
+									"        \"TechnicalDetails\",\r",
+									"        \"Address\"\r",
+									"      ],\r",
+									"      \"additionalProperties\": false\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\"status\", \"data\"],\r",
+									"  \"additionalProperties\": false\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Validate JSON schema\", function() {\r",
+									"    pm.response.to.have.jsonSchema(schema);\r",
+									"\r",
+									"})\r",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -317,117 +369,8 @@
 					},
 					"response": []
 				}
-			]
-		},
-		{
-			"name": "Create New Student",
-			"item": [
-				{
-					"name": "Create_StudentDetails",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//console.log(pm.response);\r",
-									"console.log(pm.response.responseTime)\r",
-									"console.log(pm.response.name)"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.environment.set\r",
-									"pm.environment.set(\"variable_key\", \"variable_value\");\r",
-									"pm.environment.clear()"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\":\"1\",\r\n    \"first_name\": \"Priyanka\",\r\n    \"middle_name\": \"\",\r\n    \"last_name\": \"Sharma\",\r\n    \"date_of_birth\": \"14-Jul-1986\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/studentsDetails/{{Student_ID}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"studentsDetails",
-								"{{Student_ID}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get_StudentDetailsByID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Verify Get success code\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 200ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Verify Staus response value\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"true\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Status code name has string\", function () {\r",
-									"    pm.response.to.have.status(\"OK\");\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/studentsDetails/{{Student_ID}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"studentsDetails",
-								"{{Student_ID}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
+			],
+			"description": "To add the student address details."
 		},
 		{
 			"name": "DeleteStudent",
@@ -529,7 +472,33 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Delete the student details from the system."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"//Follow DRY principles\r",
+					"console.clear()\r",
+					"console.log(\"I am at collection level. I execute first\")\r",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
