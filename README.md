@@ -1,4 +1,5 @@
 **api-testing via postman**
+
 This project uses Postman for:
 
 Manual API Testing: Validating endpoints by sending requests and inspecting responses.
