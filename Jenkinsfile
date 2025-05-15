@@ -12,7 +12,7 @@ pipeline {
                 bat 'dir '
                 bat '''echo "Code downloaded from Git"
 
-newman run "TestingWorld.postman_collection.json" -e "%Environment%_Env.postman_environment.json" -r htmlextra --reporter-htmlextra-export results\\report.html --suppress-exit-code'''
+newman run "TestingWorld.postman_collection.json" -e "%Environment%_Env.postman_environment.json"  -r htmlextra,allure --reporter-htmlextra-export results\\report.html --reporter-allure-export results\\allure-results --suppress-exit-code'''
 
                 
             }
