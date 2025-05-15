@@ -14,7 +14,7 @@ pipeline {
 
 newman run "TestingWorld.postman_collection.json" -e "%Environment%_Env.postman_environment.json" -r htmlextra --reporter-htmlextra-export results\\report.html --suppress-exit-code'''
 
-                cleanWs()
+                
             }
         }
     }
